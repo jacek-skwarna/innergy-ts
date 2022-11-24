@@ -51,11 +51,11 @@ describe("updateSelectedServices.deselect", () => {
     });
 
     test("should deselect related when last main service deselected", () => {
-        const result = updateSelectedServices(["WeddingSession", "Photography", "TwoDayEvent"], {
+        const result = updateSelectedServices(["VideoRecording", "Photography", "TwoDayEvent"], {
             type: "Deselect",
             service: "Photography"
         });
-        expect(result).toEqual(["WeddingSession"]);
+        expect(result).toEqual(["VideoRecording"]);
     });
 
     test("should not deselect related when at least one main service stays selected", () => {
