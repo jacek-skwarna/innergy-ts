@@ -33,44 +33,68 @@ const discountsConfig = {
     2020: {
         "package photography and video": {
             dependencies: ["Photography", "VideoRecording"],
-            discount: 1200,
+            discount: 600,
+            service: "Photography",
+        },
+        "package video and photography": {
+            dependencies: ["Photography", "VideoRecording"],
+            discount: 600,
+            service: "VideoRecording",
         },
         "package session and photography": {
             dependencies: ["WeddingSession", "Photography"],
             discount: 300,
+            service: "WeddingSession",
         },
         "package session and video": {
             dependencies: ["WeddingSession", "VideoRecording"],
             discount: 300,
-        }
+            service: "WeddingSession",
+        },
     },
     2021: {
         "package photography and video": {
             dependencies: ["Photography", "VideoRecording"],
-            discount: 1300,
+            discount: 650,
+            service: "Photography",
+        },
+        "package video and photography": {
+            dependencies: ["Photography", "VideoRecording"],
+            discount: 650,
+            service: "VideoRecording",
         },
         "package session and photography": {
             dependencies: ["WeddingSession", "Photography"],
             discount: 300,
+            service: "WeddingSession",
         },
         "package session and video": {
             dependencies: ["WeddingSession", "VideoRecording"],
             discount: 300,
-        }
+            service: "WeddingSession",
+        },
     },
     2022: {
         "package photography and video": {
             dependencies: ["Photography", "VideoRecording"],
-            discount: 1300,
+            discount: 650,
+            service: "Photography",
         },
-        "package session and photography": {
-            dependencies: ["WeddingSession", "Photography"],
-            discount: 600,
+        "package video and photography": {
+            dependencies: ["Photography", "VideoRecording"],
+            discount: 650,
+            service: "VideoRecording",
         },
         "package session and video": {
             dependencies: ["WeddingSession", "VideoRecording"],
             discount: 300,
-        }
+            service: "WeddingSession",
+        },
+        "package session and photography": {
+            dependencies: ["WeddingSession", "Photography"],
+            discount: 600,
+            service: "WeddingSession",
+        },
     },
 };
 
@@ -148,31 +172,34 @@ export const updateSelectedServices = (
 };
 
 export const calculatePrice = (selectedServices: ServiceType[] = [], selectedYear: ServiceYear) => {
-    const basePrice = selectedServices.reduce((previousBasePrice, service) => {
-        const servicePrice = pricesConfig[service][selectedYear] || 0;
-        // console.log(`pricesConfig[${service}][${selectedYear}]: ${servicePrice}`);
-        return (previousBasePrice + servicePrice);
-    }, 0);
-    const discountsInSelectedYear = Object.values(discountsConfig[selectedYear]);
+    const discountsInSelectedYear = Object.values(discountsConfig[selectedYear] || {});
 
-    const maxDiscount = discountsInSelectedYear.length
-        ? discountsInSelectedYear.reduce((previousMaxDiscount, discountConfig) => {
+    const [basePrice, finalPrice] = selectedServices.reduce(([previousBasePrice, previousDiscountedPrice], service) => {
+        const serviceBasePrice = pricesConfig[service][selectedYear] || 0;
+        const serviceDiscountedPrice = discountsInSelectedYear.reduce((lowestServicePrice, discountConfig) => {
             const {
                 discount,
                 dependencies,
+                service: affectedService,
             } = discountConfig;
+
+            if (service !== affectedService) {
+                return lowestServicePrice;
+            }
 
             const isDiscountApplicable = dependencies.every((item: ServiceType) => selectedServices.includes(item));
 
             if (!isDiscountApplicable) {
-                return previousMaxDiscount;
+                return lowestServicePrice;
             }
 
-            return discount > previousMaxDiscount ? discount : previousMaxDiscount;
-        }, 0)
-        : 0;
+            const discountedServicePrice = serviceBasePrice - discount;
 
-    const finalPrice = basePrice - maxDiscount;
-    // console.log(`maxDiscount: ${maxDiscount}`);
+            return discountedServicePrice < lowestServicePrice ? discountedServicePrice : lowestServicePrice;
+        }, serviceBasePrice);
+
+        return [(previousBasePrice + serviceBasePrice), (previousDiscountedPrice + serviceDiscountedPrice)];
+    }, [0, 0]);
+    
     return ({ basePrice, finalPrice });
 };

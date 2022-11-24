@@ -187,7 +187,7 @@ describe.each([
             const withSession = calculatePrice(["VideoRecording", "Photography", "WeddingSession"], year);
 
             const priceChangeWithSession = withSession.finalPrice - withoutSession.finalPrice;
-console.log(`year: ${year}, withSession.finalPrice: ${withSession.finalPrice}, withoutSession.finalPrice: ${withoutSession.finalPrice}`);
+
             expect(withSession.basePrice).toBeGreaterThan(0);
             expect(withSession.finalPrice).toBeGreaterThan(0);
             expect(priceChangeWithSession).toEqual(increase);
