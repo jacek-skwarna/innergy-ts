@@ -51,11 +51,11 @@ describe("updateSelectedServices.deselect", () => {
     });
 
     test("should deselect related when last main service deselected", () => {
-        const result = updateSelectedServices(["VideoRecording", "Photography", "TwoDayEvent"], {
+        const result = updateSelectedServices(["WeddingSession", "Photography", "TwoDayEvent"], {
             type: "Deselect",
             service: "Photography"
         });
-        expect(result).toEqual(["VideoRecording"]);
+        expect(result).toEqual(["WeddingSession"]);
     });
 
     test("should not deselect related when at least one main service stays selected", () => {
@@ -187,7 +187,7 @@ describe.each([
             const withSession = calculatePrice(["VideoRecording", "Photography", "WeddingSession"], year);
 
             const priceChangeWithSession = withSession.finalPrice - withoutSession.finalPrice;
-
+console.log(`year: ${year}, withSession.finalPrice: ${withSession.finalPrice}, withoutSession.finalPrice: ${withoutSession.finalPrice}`);
             expect(withSession.basePrice).toBeGreaterThan(0);
             expect(withSession.finalPrice).toBeGreaterThan(0);
             expect(priceChangeWithSession).toEqual(increase);
